@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-local-mock",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "chengjiang",
   "description": "vite plugin for local mock",
   "repository": "https://github.com/tipace/vite-plugin-local-mock.git",
@@ -15,6 +15,9 @@
     "localmock",
     "loca-lmock"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -26,7 +29,8 @@
   "license": "MIT",
   "dependencies": {
     "query-string": "^8.1.0",
-    "raw-body": "^2.5.2"
+    "raw-body": "^2.5.2",
+    "regexparam": "^3.0.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
@@ -38,8 +42,22 @@
   },
   "scripts": {
     "test": "vitest",
-    "build": "tsup-node src/index.ts --dts --format esm,cjs --clean",
+    "build": "tsup",
+    "watch": "tsup --watch",
     "pub": "npm version prerelease && npm run build && npm publish",
     "pub:stable": "npm run build && npm publish"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "clean": true,
+    "dts": true,
+    "format": [
+      "esm",
+      "cjs"
+    ],
+    "splitting": false,
+    "sourcemap": false
   }
 }

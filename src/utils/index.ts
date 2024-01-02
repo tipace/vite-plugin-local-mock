@@ -1,4 +1,6 @@
 import http from 'node:http';
+import { parse } from 'regexparam';
+import queryString from 'query-string';
 
 export function isAjax(req: http.IncomingMessage) {
   if (req.method?.toLowerCase() === 'post') {
@@ -27,4 +29,57 @@ export function makeMockData(v: any, params: any): any {
     res[key] = makeMockData(v[key], params);
   }
   return res;
+}
+
+function exec(
+  path: string,
+  result: {
+    keys: string[];
+    pattern: RegExp;
+  }
+): Object {
+  const out: any = {};
+  let i = 0;
+  let matches = result.pattern.exec(path) as RegExpExecArray;
+  while (i < result.keys.length) {
+    out[result.keys[i]] = matches[++i] || null;
+  }
+  return out;
+}
+
+export function parseRestUrl(url: string, path: string) {
+  const parser = parse(path);
+  if (!parser.pattern.test(url)) {
+    return null;
+  }
+  return exec(url, parser);
+}
+
+function getRestUrlInfo(list: any[], url: string) {
+  for (let i = 0; i < list.length; i++) {
+    const res = parseRestUrl(url, list[i].url);
+    if (res) {
+      return [list[i].path, res];
+    }
+  }
+  return [];
+}
+
+export function getMockPathInfo(
+  url: http.IncomingMessage['url'],
+  routers: any
+) {
+  const [reqPath, reqSearch] = url?.split('?') || [];
+  let filePath = reqPath;
+  let restParams = {};
+  const queryParams = reqSearch ? queryString.parse(reqSearch) : {};
+
+  if (routers?.length) {
+    const [rPath, rParams] = getRestUrlInfo(routers, reqPath);
+    if (rPath) {
+      filePath = rPath;
+      restParams = rParams;
+    }
+  }
+  return [filePath, { ...queryParams, ...restParams }];
 }
