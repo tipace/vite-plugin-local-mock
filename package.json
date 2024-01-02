@@ -1,9 +1,9 @@
 {
   "name": "vite-plugin-local-mock",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "author": "chengjiang",
-  "description": "vite plugin for mock file",
-  "repository": "https://github.com/tipace/vite-plugin-file-mock.git",
+  "description": "vite plugin for local mock",
+  "repository": "https://github.com/tipace/vite-plugin-local-mock.git",
   "files": [
     "dist"
   ],
@@ -39,7 +39,7 @@
   "scripts": {
     "test": "vitest",
     "build": "tsup-node src/index.ts --dts --format esm,cjs --clean",
-    "pub": "npm version prerelease && npm run build && npm run publish",
-    "pub:stable": "npm run build && npm run publish"
+    "pub": "npm version prerelease && npm run build && npm publish",
+    "pub:stable": "npm run build && npm publish"
   }
 }
