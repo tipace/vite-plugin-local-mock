@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { parse } from 'regexparam';
 import queryString from 'query-string';
+import type { Router, RouterParams } from '../types';
 
 export function isAjax(req: http.IncomingMessage) {
   if (req.method?.toLowerCase() === 'post') {
@@ -15,7 +16,7 @@ export function isAjax(req: http.IncomingMessage) {
   return false;
 }
 
-export function makeMockData(v: any, params: any): any {
+export function makeMockData(v: any, params: any) {
   if (typeof v === 'function') {
     return v(params);
   }
@@ -38,7 +39,7 @@ function exec(
     pattern: RegExp;
   }
 ): Object {
-  const out: any = {};
+  const out: RouterParams = {};
   let i = 0;
   let matches = result.pattern.exec(path) as RegExpExecArray;
   while (i < result.keys.length) {
@@ -55,7 +56,7 @@ export function parseRestUrl(url: string, path: string) {
   return exec(url, parser);
 }
 
-function getRestUrlInfo(list: any[], url: string) {
+function getRestUrlInfo(list: Router[], url: string): [string?, Object?] {
   for (let i = 0; i < list.length; i++) {
     const res = parseRestUrl(url, list[i].url);
     if (res) {
@@ -67,11 +68,11 @@ function getRestUrlInfo(list: any[], url: string) {
 
 export function getMockPathInfo(
   url: http.IncomingMessage['url'],
-  routers: any
+  routers: Router[]
 ) {
   const [reqPath, reqSearch] = url?.split('?') || [];
   let filePath = reqPath;
-  let restParams = {};
+  let restParams: Object | undefined = {};
   const queryParams = reqSearch ? queryString.parse(reqSearch) : {};
 
   if (routers?.length) {

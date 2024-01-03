@@ -5,14 +5,9 @@ import { createRequire } from 'node:module';
 import http from 'node:http';
 import fs from 'node:fs';
 import { isAjax, makeMockData, getMockPathInfo } from './utils';
+import type { PluginConfig, Router } from './types';
 
 const require = createRequire(import.meta.url);
-
-export interface PluginConfig {
-  dir?: string;
-  enable?: boolean;
-  pathMapConfig?: string;
-}
 
 const viteLocalMockPlugin = (opt?: PluginConfig): PluginOption => ({
   name: 'vite-plugin-local-mock',
@@ -41,7 +36,7 @@ const viteLocalMockPlugin = (opt?: PluginConfig): PluginOption => ({
         }
 
         try {
-          let routers: any = [];
+          let routers: Router[] = [];
           if (options.pathMapConfig) {
             const pathMapFile = path.join(
               process.cwd(),
@@ -55,7 +50,10 @@ const viteLocalMockPlugin = (opt?: PluginConfig): PluginOption => ({
             }
           }
 
-          const [filePath, urlParams] = getMockPathInfo(req.url, routers);
+          const [filePath, urlParams] = getMockPathInfo(req.url, routers) as [
+            string,
+            Object
+          ];
           const mockPath = path.join(
             process.cwd(),
             options.dir,
